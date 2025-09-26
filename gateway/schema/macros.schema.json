@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JARVIS Macros v1",
+  "type": "object",
+  "required": ["version", "steps"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^1\\.[0-9]+$" },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "string" },
+        "project": { "type": "string" },
+        "exec_id_hint": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "env": { "type": "object", "additionalProperties": { "type": "string" } },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["op"],
+        "properties": {
+          "op": { "type": "string", "minLength": 1 },
+          "args": { "type": ["object", "null"] },
+          "hitl_gate": { "type": "boolean" },
+          "cost_estimate_jpy": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "budget": {
+      "type": "object",
+      "properties": { "cap_jpy": { "type": "number", "minimum": 0 } },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
