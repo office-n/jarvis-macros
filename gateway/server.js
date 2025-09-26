@@ -1,8 +1,8 @@
 const express = require("express");
-const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
-const fetch = globalThis.fetch;
+const crypto  = require("crypto");
+const fs      = require("fs");
+const path    = require("path");
+const fetch   = globalThis.fetch;
 
 const app = express();
 app.disable("x-powered-by");
@@ -18,7 +18,7 @@ function resolveSchemaPath() {
     process.env.SCHEMA_PATH
   ].filter(Boolean);
   for (const p of candidates) {
-    try { fs.accessSync(p); return p; } catch { /* try next */ }
+    try { fs.accessSync(p); return p; } catch { /* next */ }
   }
   throw new Error("macros.schema.json not found in expected paths");
 }
@@ -33,18 +33,24 @@ addFormats(ajv);
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const validateMacros = ajv.compile(schema);
 
-app.get("/", (_req, res) => res.status(200).send("ok"));
-app.get("/healthz", (_req, res) => res.status(200).json({ ok: true }));
-
+// 署名検証
 function verifyHmac(req) {
   const sig = req.header("X-GO-Signature");
   if (!sig) return false;
   const calc = crypto.createHmac("sha256", GO_SHARED_SECRET).update(req.rawBody || "", "utf8").digest("hex");
   return sig === calc;
 }
+
+// ヘルス
+app.get("/", (_req, res) => res.status(200).send("ok"));
+app.get("/healthz", (_req, res) => res.status(200).json({ ok: true }));
+
+// URL 安全性チェック
 function isSafeHttpUrl(u) {
   try { const url = new URL(u); return ["http:", "https:"].includes(url.protocol); } catch { return false; }
 }
+
+// 外部JSON取得（サイズ・時間制限）
 async function fetchJsonWithLimits(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -58,6 +64,7 @@ async function fetchJsonWithLimits(url) {
   } finally { clearTimeout(timeout); }
 }
 
+// /command（Phase 6）
 app.post("/command", async (req, res) => {
   try {
     if (!verifyHmac(req)) return res.status(401).json({ code: "ERR_SIGNATURE", message: "invalid X-GO-Signature" });
@@ -87,5 +94,10 @@ app.post("/command", async (req, res) => {
   }
 });
 
+// ✅ HITL ルート登録（Phase 7 スケルトン）
+const { registerHitlRoutes } = require("./hitl");
+registerHitlRoutes(app, verifyHmac);
+
+// 起動
 const port = process.env.PORT || 3001;
 app.listen(port, () => console.log(`Gateway listening on http://localhost:${port}`));
