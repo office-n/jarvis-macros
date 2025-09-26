@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "meta": { "owner": "Boss", "project": "JARVIS Evolution Project" },
+  "env": { "TZ": "Asia/Tokyo" },
+  "steps": [
+    { "op": "echo", "args": {"msg": "hello"} },
+    { "op": "ping", "args": {"url": "https://example.com"}, "cost_estimate_jpy": 0 }
+  ],
+  "budget": { "cap_jpy": 10000 }
+}

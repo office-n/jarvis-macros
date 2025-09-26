@@ -1,0 +1,51 @@
+name: Validate Macros JSON
+on:
+  pull_request:
+    paths:
+      - "schema/**.json"
+      - "**/macros*.json"
+      - "validate-macros.sh"
+  push:
+    branches: [ main, master ]
+    paths:
+      - "schema/**.json"
+      - "**/macros*.json"
+      - "validate-macros.sh"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install jsonschema
+        run: python -m pip install --upgrade pip jsonschema
+
+      - name: Ensure script is executable
+        run: chmod +x ./validate-macros.sh
+
+      - name: Validate default macros.json (if present)
+        run: |
+          if [ -f macros.json ]; then
+            ./validate-macros.sh
+          else
+            echo "no macros.json, skipping default"
+          fi
+
+      - name: Validate all macros*.json (glob)
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(macros*.json)
+          if (( ${#files[@]} )); then
+            for f in "${files[@]}"; do
+              ./validate-macros.sh "$f"
+            done
+          else
+            echo "no matching macros*.json"
+          fi

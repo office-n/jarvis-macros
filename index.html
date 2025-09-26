@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<p class="muted">現在時刻（JST）：<span id="nowJst"></span></p>
+<script>
+const fmt = new Intl.DateTimeFormat("ja-JP", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric", month: "2-digit", day: "2-digit",
+  hour: "2-digit", minute: "2-digit", second: "2-digit",
+  hour12: false
+});
+function nowJSTString() {
+  return fmt.format(new Date()).replace(/\//g, "-").replace(",", "");
+}
+function showNowJST() {
+  const el = document.getElementById("nowJst");
+  if (el) el.textContent = nowJSTString() + " JST";
+}
+setInterval(showNowJST, 1000);
+showNowJST();
+</script>

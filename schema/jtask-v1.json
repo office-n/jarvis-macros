@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JTASK",
+  "type": "object",
+  "required": ["id","intent","inputs","policy","routing","telemetry","status"],
+  "properties": {
+    "id": {"type":"string"},
+    "intent": {"type":"string"},
+    "inputs": {"type":"object"},
+    "policy": {"type":"object"},
+    "routing": {"type":"object"},
+    "approvals": {"type":"array","items":{"type":"object"}},
+    "telemetry": {"type":"object"},
+    "outputs": {"type":"object"},
+    "artifacts": {"type":"array","items":{"type":"string"}},
+    "status": {"type":"string","enum":["QUEUED","RUNNING","WAITING_APPROVAL","PROMOTED","ROLLED_BACK","FAILED"]},
+    "metrics": {"type":"object"}
+  }
+}
