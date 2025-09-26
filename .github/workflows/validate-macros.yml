@@ -37,15 +37,19 @@ jobs:
             echo "no macros.json, skipping default"
           fi
 
-      - name: Validate all macros*.json (glob)
+      - name: Validate macros data files (glob)
         shell: bash
         run: |
-          shopt -s nullglob
-          files=(macros*.json)
+          shopt -s globstar nullglob
+          files=( **/macros.json **/macros-*.json )
           if (( ${#files[@]} )); then
             for f in "${files[@]}"; do
+              if [[ "$f" == *.schema.json || "$f" == */schema/* ]]; then
+                echo "skip schema: $f"
+                continue
+              fi
               ./validate-macros.sh "$f"
             done
           else
-            echo "no matching macros*.json"
+            echo "no macros data files"
           fi
