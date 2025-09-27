@@ -1,16 +1,14 @@
 {
-  "name": "jarvis-gateway",
-  "version": "1.0.0",
+  "name": "jarvis-gateway-clean",
   "private": true,
-  "main": "server.js",
-  "type": "commonjs",
-  "scripts": {
-    "start": "node server.js"
-  },
+  "version": "1.0.0",
+  "main": "bootstrap.js",
+  "scripts": { "start": "node bootstrap.js" },
   "dependencies": {
+    "express": "^4.19.2",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "express": "^4.19.2",
-    "node-fetch": "^3.3.2"
+    "undici": "^5.28.4",
+    "@google-cloud/firestore": "^7.8.0"
   }
 }
